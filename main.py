@@ -28,8 +28,8 @@ def copyFile(before):#备份图片的函数
         #print "---  new folder...  ---"
         #print "---  OK  ---"
     else:
-        print "---  There is this folder!  ---"
-   
+        #print "---  There is this folder!  ---"
+        pass
 def WaterMark(wpath,what):
     realpath = os.getcwd() 
     ichunqiu = realpath+"\\i.png"
@@ -65,7 +65,8 @@ def IsPic(path):
     filelist = os.listdir(This_path)  
     for filename in filelist:
         filepath = os.path.join(This_path, filename) 
-        if filepath.endswith('png') or filepath.endswith('PNG'):                                             
+        if filepath.endswith('png') or filepath.endswith('PNG'):
+            #print filepath
             WaterMark(filepath,mark)
             
         elif filepath.endswith('gif') or filepath.endswith('GIF'):
@@ -75,8 +76,8 @@ def IsPic(path):
                 create_gif(a, filepath) #合成
 
         else:
-            print 'failed to recognized.'         
-                
+            #print 'failed to recognized.'         
+            pass   
 def analyseImage(path): #处理png图片
     im = Image.open(path)
     results = {
@@ -142,36 +143,46 @@ def processImage(path): #处理gif图
     List.append(image_list)
     
 def create_gif(image_list, gif_name): #合成为gif图
- 
     frames = []
-    for image_name in image_list:
+    smaller_image = []
+    smaller_image = image_list[0:-1:2] #跳帧保存
+    for image_name in smaller_image:
         frames.append(imageio.imread(image_name))
     # Save them as frames into a gif 
-    imageio.mimsave(gif_name, frames, 'GIF', duration = 0.1)
- 
+    imageio.mimsave(gif_name, frames, 'GIF', duration = 0.3)
+    #print image_list
     return      
         
-def judgment(path,mark):
-    #global mark
-    filelist = os.listdir(path)
+def judgment(path,mark): # path:C:\Users\whale\Desktop\test\docx\complex
+
+    filelist = os.listdir(path) #['silic.docx'] 列出文件名称
+    file_dic = []
+    pic_path = []
+    file_dic = [i.strip('.docx') for i in filelist] #['silic']
+    pic_path = [os.path.join(path, i) for i in file_dic]  #C:\Users\whale\Desktop\test\docx\complex\silic
+
     for filename in filelist:
-        filepath = os.path.join(path, filename)    
-        if filepath.endswith('docx'):
+        #print filename silic.docx
+        if filename.endswith('docx'): #提取出docx图片到同名文件夹，并且删除多余文件。
             handleDocx.my_unzip(path)
             handleDocx.delete(path)
-            word_media=filepath.strip(".docx")
-            for root,dirs,files in os.walk(word_media):
-                for h in files:
-                    docxPicPath = filepath.strip(".docx")+"\\"+h
-                    WaterMark(docxPicPath,mark)  
+            break
         else:
-             copyFile(path)
-             IsDir(path)
-             break
-    for a in List:
-        for b in a:
-            os.remove(b)
-            
+            copyFile(path)
+            IsDir(path)
+            for a in List:
+                for b in a:
+                    os.remove(b)
+            break
+    for i in pic_path:
+        #print i
+        #word_media=filepath.strip(".docx")
+        for root,dirs,files in os.walk(i):
+            for h in files:
+                docxPicPath = i+"\\"+h
+                #print 'docxpicpath:'+docxPicPath
+                WaterMark(docxPicPath,mark)  
+
 def startButton():
     path = name.get().replace("\\","\\\\")    
     radSel = GUIchoice.get()
@@ -179,16 +190,12 @@ def startButton():
         global mark
         mark="i"
         judgment(path,mark)  
-        #path="C:\\Users\\whale\\Desktop\\test"
-        #judgment(path,mark)  
+
     elif radSel == 2: 
         #rad2.configure(text='done ' + name.get())
         mark="e"
         judgment(path,mark)  
-    action.configure(text='done')
-    
-    #getInputPath = name.get() #This is the path you input
-    #endStart(getInputPath)
+
 if __name__ == '__main__':
     win = tk.Tk()
     win.title("Watermark Program")
@@ -214,3 +221,10 @@ if __name__ == '__main__':
 
     win.mainloop()  
         
+
+
+   
+        
+            
+
+
