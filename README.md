@@ -3,3 +3,4 @@
 3. 提取word文档中的所有图片，添加水印。
 
 python main.py
+![图片](https://github.com/whale3070/IEmark/assets/29242426/ebe051b4-3c66-481d-ae2a-b8ef49b7a906)
